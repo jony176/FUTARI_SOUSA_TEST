@@ -181,7 +181,7 @@
         <button class="primary" id="btnRandActions">🎲 アクションをルール通り生成</button>
         <button id="btnRandBoth">🎲 技能＋アクション生成</button>
       </div>
-      <p class="muted">技能は重複なし／クラス別の取得数に従う。固定技能は自動付与。 :contentReference[oaicite:1]{index=1}</p>
+      <p class="muted">技能は重複なし／クラス別の取得数に従う。固定技能は自動付与。</p>
       <div>
         <label>技能一覧（カテゴリ別）</label>
         <div id="skillsView" class="mono"></div>
@@ -189,7 +189,7 @@
     </div>
 
     <div class="card">
-      <p><b>助手メンタル</b>（助手のみ） :contentReference[oaicite:2]{index=2}</p>
+      <p><b>助手メンタル</b>（助手のみ）</p>
       <div class="btnbar" style="gap:10px;">
         <div style="flex:1;">
           <label>余裕（初期0）</label>
@@ -207,7 +207,7 @@
       </div>
 
       <div id="guestBlock" style="margin-top:12px;">
-        <p><b>ゲスト</b>（助手のみ・任意） :contentReference[oaicite:3]{index=3}</p>
+        <p><b>ゲスト</b>（助手のみ・任意）</p>
         <div class="btnbar" style="justify-content:space-between;">
           <div style="flex:1;">
             <label>ゲスト名</label>
@@ -257,16 +257,8 @@ function pickUnique(arr, usedSet){
   usedSet.add(v);
   return v;
 }
-function shuffle(arr){
-  const a = [...arr];
-  for(let i=a.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
 
-/** ========= データ（メモ準拠） ========= */
+/** ========= データ ========= */
 const ROLE = {
   detective: { label: "探偵", classes: ["運命の血統","天性の才能","マニア"] },
   assistant: { label: "助手", classes: ["正義の人","情熱の人","巻き込まれの人"] },
@@ -297,14 +289,12 @@ const SKILLS = {
   肉体: ["捕縛","防御","根性","体力","突破","追跡"],
 };
 
-// 固定技能（クラス別）
 const FIXED_SKILLS = {
   "正義の人": ["説得","突破"],
   "情熱の人": ["社交","根性"],
   "巻き込まれの人": ["防御"],
 };
 
-// 取得数ルール（メモ準拠） :contentReference[oaicite:4]{index=4}
 const SKILL_RULES = {
   "運命の血統": { 洞察: 2, 鑑識: 2, 人間: 0, 肉体: 0, free: 2 },
   "天性の才能": { 洞察: 2, 鑑識: 3, 人間: 0, 肉体: 0, free: 1 },
@@ -314,7 +304,6 @@ const SKILL_RULES = {
   "巻き込まれの人": { 洞察: 0, 鑑識: 0, 人間: 2, 肉体: 2, free: 0 },
 };
 
-// アクション：最低限（メモ準拠） :contentReference[oaicite:5]{index=5}
 const BASE_ACTIONS = {
   detective: [{
     name:"フタリソウサ", type:"補助", cost:"なし",
@@ -335,8 +324,6 @@ const CLASS_ACTIONS = {
   "巻き込まれの人": [{ name:"こうなるとわかってた", type:"常駐", cost:"なし", text:"たまり場で余裕獲得時、獲得余裕+1。" }],
 };
 
-// 名前表（抜粋ではなく、あなたのメモそのままを配列化するのが理想）
-// ここでは動作確認のため、先頭〜中盤を中心に入れてあります（必要なら全部入れた版に差し替えるよ）
 const SURNAME = [
   "佐藤","前田","小島","柴田","秋山","渡辺","鈴木","木村","佐々木","山崎","森","田中","長谷川","太田","西村","伊藤",
   "上田","藤原","小林","大西","高橋","皇","安藤","村上","石田","関","荒井","小鳥遊","中川","星野","榎本","飯田","四季",
@@ -404,8 +391,8 @@ const GUEST_REL = [
 
 /** ========= 状態 ========= */
 const state = {
-  skills: [],   // {cat, name, fixed:boolean}
-  actions: [],  // {name,type,cost,text}
+  skills: [],
+  actions: [],
 };
 
 /** ========= DOM ========= */
@@ -433,7 +420,6 @@ function setVisible(node, show){
 
 /** ========= 初期化 ========= */
 function init(){
-  // alias table
   const ul = el("aliasList");
   ul.innerHTML = "";
   for(const a of ALIAS_TABLE){
@@ -449,9 +435,7 @@ function init(){
   fillSelect(el("like"), LIKE_DISLIKE_TABLE);
   fillSelect(el("dislike"), LIKE_DISLIKE_TABLE);
 
-  // guest
   fillSelect(el("guestRel"), GUEST_REL);
-  // guestSkill: 全技能を列挙
   const allSkills = Object.entries(SKILLS).flatMap(([cat, arr]) => arr.map(s => `${cat}:${s}`));
   fillSelect(el("guestSkill"), allSkills);
 
@@ -477,7 +461,6 @@ function applyRoleVisibility(){
   const isDet = role === "detective";
   setVisible(quirkBlockEl, isDet);
   setVisible(guestBlockEl, !isDet);
-  // 助手メンタル欄（入力自体は残してよいが、表示を切替）
   setVisible(el("yoyuu").closest(".btnbar"), !isDet);
   setVisible(el("shinrou").closest(".btnbar"), !isDet);
 }
@@ -486,13 +469,12 @@ function updateAgePill(){
   agePillEl.textContent = ageChkEl.checked ? "ON" : "OFF";
 }
 
-/** ========= ランダム生成（フィールド単位） ========= */
+/** ========= ランダム生成 ========= */
 function genName(){
   el("name").value = `${pick(SURNAME)} ${pick(GIVEN)}`;
 }
 function genAge(){
-  if(!ageChkEl.checked) return; // チェック時のみ
-  // 年齢は相談が基本なので、軽めのレンジ（10〜60）にしておく。必要なら変える。
+  if(!ageChkEl.checked) return;
   el("age").value = String(randInt(10, 60));
 }
 function genRole(){
@@ -515,8 +497,8 @@ function genHeight(){ el("height").value = pick(HEIGHT_TABLE); }
 function genFashion(){ el("fashion").value = pick(FASHION_TABLE); }
 function genJob(){ el("job").value = pick(JOB_TABLE); }
 function genQuirk(){ el("quirk").value = pick(QUIRK_TABLE); }
+
 function genLikeDislike(){
-  // 同キャラ内で重複しない
   const like = pick(LIKE_DISLIKE_TABLE);
   let dislike = pick(LIKE_DISLIKE_TABLE);
   let guard = 0;
@@ -547,6 +529,7 @@ function rerollDislikeOnly(){
   }
   el("dislike").value = dislike;
 }
+
 function genGuestName(){
   el("guestName").value = `${pick(SURNAME)} ${pick(GIVEN)}`;
 }
@@ -558,7 +541,7 @@ function genGuestRel(){
   el("guestRel").value = pick(GUEST_REL);
 }
 
-/** ========= レベル3：技能生成 ========= */
+/** ========= 技能生成 ========= */
 function generateSkillsByRules(){
   const cls = classEl.value;
   const rule = SKILL_RULES[cls];
@@ -571,10 +554,8 @@ function generateSkillsByRules(){
   const used = new Set();
   const out = [];
 
-  // 1) 固定技能を付与（あれば）
   const fixed = FIXED_SKILLS[cls] ?? [];
   for(const s of fixed){
-    // 固定技能はどのカテゴリかを逆引きする
     const cat = Object.keys(SKILLS).find(c => SKILLS[c].includes(s)) ?? "不明";
     if(!used.has(s)){
       used.add(s);
@@ -582,7 +563,6 @@ function generateSkillsByRules(){
     }
   }
 
-  // 2) カテゴリ指定分を抽選
   for(const cat of ["洞察","鑑識","人間","肉体"]){
     const need = rule[cat] ?? 0;
     for(let i=0;i<need;i++){
@@ -592,13 +572,10 @@ function generateSkillsByRules(){
     }
   }
 
-  // 3) free枠：カテゴリをランダムに選んで、重複なしで取得
   const free = rule.free ?? 0;
   const cats = ["洞察","鑑識","人間","肉体"];
   let guard = 0;
   for(let i=0;i<free;i++){
-    // freeは「好きなカテゴリから」なので、カテゴリ自体をランダム抽選
-    // 取得可能な候補が残っているカテゴリだけを候補にする
     const availableCats = cats.filter(c => SKILLS[c].some(s => !used.has(s)));
     if(availableCats.length === 0) break;
     const cat = pick(availableCats);
@@ -607,7 +584,6 @@ function generateSkillsByRules(){
     out.push({cat, name:v, fixed:false});
   }
 
-  // 4) 表示用にカテゴリ順→固定優先
   state.skills = out.sort((a,b)=>{
     const order = {洞察:1,鑑識:2,人間:3,肉体:4};
     if(order[a.cat] !== order[b.cat]) return order[a.cat]-order[b.cat];
@@ -618,7 +594,7 @@ function generateSkillsByRules(){
   renderSkills();
 }
 
-/** ========= レベル3：アクション生成 ========= */
+/** ========= アクション生成 ========= */
 function generateActionsByRules(){
   const role = roleEl.value;
   const cls = classEl.value;
@@ -626,7 +602,6 @@ function generateActionsByRules(){
   const used = new Set();
   const out = [];
 
-  // 1) 基本アクション（探偵/助手）
   for(const a of BASE_ACTIONS[role]){
     if(!used.has(a.name)){
       used.add(a.name);
@@ -634,7 +609,6 @@ function generateActionsByRules(){
     }
   }
 
-  // 2) クラスアクション（1つ）
   const ca = CLASS_ACTIONS[cls] ?? [];
   for(const a of ca){
     if(!used.has(a.name)){
@@ -669,6 +643,7 @@ function renderSkills(){
   }
   el("skillsView").textContent = text.trim();
 }
+
 function renderActions(){
   if(state.actions.length === 0){
     el("actionsView").textContent = "（まだ生成されていません）";
@@ -702,6 +677,7 @@ function buildOutput(){
   lines.push(`【職業】${el("job").value}`);
   lines.push(`【好き】${el("like").value}`);
   lines.push(`【嫌い】${el("dislike").value}`);
+
   if(roleEl.value === "detective"){
     lines.push(`【異常な癖】${el("quirk").value}`);
   }else{
@@ -767,7 +743,9 @@ function randomAllLevel3(){
   genFashion();
   genJob();
   genLikeDislike();
+
   if(roleEl.value === "detective") genQuirk();
+
   if(roleEl.value === "assistant"){
     genGuestName();
     genGuestSkill();
@@ -775,6 +753,7 @@ function randomAllLevel3(){
     el("yoyuu").value = "0";
     el("shinrou").value = "0";
   }
+
   generateSkillsByRules();
   generateActionsByRules();
   buildOutput();

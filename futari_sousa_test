@@ -3,818 +3,928 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>フタリソウサ キャラ作成ツール（レベル3雛形）</title>
+  <title>フタリソウサ：キャラクターシート作成ツール（試作）</title>
   <style>
-    body { font-family: system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif; margin: 16px; line-height: 1.5; }
-    h1 { font-size: 20px; margin: 0 0 12px; }
-    h2 { font-size: 16px; margin: 20px 0 8px; }
-    .row { display: grid; grid-template-columns: 1fr; gap: 10px; }
-    @media(min-width: 900px){ .row.two { grid-template-columns: 1fr 1fr; } }
-    label { display:block; font-size: 12px; opacity: .85; margin-bottom: 4px; }
-    input[type="text"], select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 10px; font-size: 14px; box-sizing: border-box; }
-    textarea { min-height: 90px; }
-    .card { border: 1px solid #e0e0e0; border-radius: 14px; padding: 12px; }
-    .btnbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
-    button { padding: 10px 12px; border: 1px solid #ccc; border-radius: 12px; background: #fff; font-size: 14px; }
-    button.primary { border-color: #111; }
-    button.small { padding: 6px 10px; font-size: 12px; border-radius: 10px; }
-    .pill { display:inline-block; padding: 2px 8px; border:1px solid #ddd; border-radius: 999px; font-size: 12px; margin-left: 6px; }
-    .grid3 { display:grid; grid-template-columns: 1fr; gap: 10px; }
-    @media(min-width: 900px){ .grid3 { grid-template-columns: 1fr 1fr 1fr; } }
-    .muted { font-size: 12px; opacity: .75; }
-    details summary { cursor: pointer; }
-    .list { padding-left: 18px; margin: 6px 0; }
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Noto Sans Mono", monospace; white-space: pre-wrap; background: #fafafa; border:1px solid #eee; border-radius: 12px; padding: 12px; }
+    :root { --gap: 12px; --bd:#e6e6e6; --mut:#666; --bg:#fafafa; }
+    body { font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif; margin: 18px; line-height: 1.55; }
+    h1 { margin: 0 0 8px; font-size: 20px; }
+    .hint { margin: 0 0 14px; color: var(--mut); }
+    .wrap { max-width: 1100px; display: grid; gap: 14px; }
+    .row { display:flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .card { border: 1px solid var(--bd); border-radius: 10px; padding: 12px; background: white; }
+    .card h2 { margin:0 0 10px; font-size: 16px; }
+    .grid2 { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 880px){ .grid2{ grid-template-columns:1fr; } }
+    label { display:block; font-size: 13px; color:#222; }
+    input[type="text"], input[type="number"], select, textarea {
+      width: 100%; box-sizing: border-box; padding: 9px 10px; border: 1px solid var(--bd);
+      border-radius: 8px; background: white; font-size: 14px;
+    }
+    textarea { min-height: 86px; resize: vertical; }
+    .seg { display:flex; gap: 8px; flex-wrap: wrap; }
+    .seg label { display:flex; align-items:center; gap: 6px; padding: 7px 10px; border:1px solid var(--bd); border-radius:999px; cursor:pointer; background: var(--bg); }
+    .seg input { margin:0; }
+    .muted { color: var(--mut); font-size: 12px; }
+    .pill { display:inline-flex; align-items:center; gap: 8px; padding: 6px 10px; border:1px solid var(--bd); border-radius: 999px; background: var(--bg); font-size: 12px; }
+    .ok { border-color:#bfe7c5; background:#f1fff3; }
+    .ng { border-color:#f3b3b3; background:#fff2f2; }
+    .skills { display:grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    @media (max-width: 980px){ .skills{ grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 520px){ .skills{ grid-template-columns: 1fr; } }
+    .cat { border:1px dashed var(--bd); border-radius: 10px; padding: 10px; }
+    .cat h3 { margin:0 0 6px; font-size: 14px; display:flex; justify-content:space-between; align-items:center; gap: 8px;}
+    .chk { display:flex; gap: 8px; align-items:flex-start; margin: 6px 0; }
+    .chk input { margin-top: 3px; }
+    .actions { font-size: 13px; }
+    .actions .a { margin: 6px 0; padding: 8px 10px; border: 1px solid var(--bd); border-radius: 10px; background: var(--bg); }
+    .btns { display:flex; gap: 10px; flex-wrap:wrap; }
+    button {
+      border: 1px solid var(--bd); background: white; border-radius: 10px;
+      padding: 10px 12px; cursor:pointer; font-size: 14px;
+    }
+    button.primary { background:#111; color:#fff; border-color:#111; }
+    button:active { transform: translateY(1px); }
+    .hide { display:none !important; }
+    pre.out {
+      white-space: pre-wrap; word-break: break-word; background:#0b1020; color:#e8eefc;
+      padding: 12px; border-radius: 10px; border: 1px solid #1e2a55; font-size: 13px;
+      max-height: 420px; overflow:auto;
+    }
+    details { border:1px solid var(--bd); border-radius: 10px; padding: 10px; background: white; }
+    details > summary { cursor:pointer; font-weight:600; }
   </style>
 </head>
 <body>
-  <h1>フタリソウサ キャラ作成ツール（レベル3：技能＋アクションまで自動）</h1>
+  <h1>フタリソウサ：キャラクターシート作成ツール（HTML試作）</h1>
+  <p class="hint">キャラ種別切り替え／クラス連動（背景・技能ルール・アクション）／技能数ガード／ランダム生成を実装しています。UIは動作確認しながら整えましょう。</p>
 
-  <div class="card">
-    <div class="btnbar">
-      <button class="primary" id="btnAllRandom">🎲 ぜんぶランダム生成（レベル3）</button>
-      <button id="btnReset">🧹 リセット</button>
-      <span class="muted">※ 各項目の右の🔁で“その項目だけ”再抽選できます</span>
-    </div>
-  </div>
-
-  <h2>タブ1：基本</h2>
-  <div class="row two">
-    <div class="card">
-      <div class="btnbar" style="justify-content:space-between;">
-        <div style="flex:1;">
-          <label>役割</label>
-          <select id="role">
-            <option value="detective">探偵</option>
-            <option value="assistant">助手</option>
-          </select>
-        </div>
-        <button class="small" id="rerollRole" title="この項目だけ再抽選">🔁</button>
-      </div>
-
-      <div class="btnbar" style="justify-content:space-between; margin-top:10px;">
-        <div style="flex:1;">
-          <label>クラス</label>
-          <select id="class">
-            <!-- 動的 -->
-          </select>
-        </div>
-        <button class="small" id="rerollClass" title="この項目だけ再抽選">🔁</button>
-      </div>
-
-      <div class="btnbar" style="justify-content:space-between; margin-top:10px;">
-        <div style="flex:1;">
-          <label>背景</label>
-          <select id="background">
-            <!-- 動的 -->
-          </select>
-        </div>
-        <button class="small" id="rerollBackground" title="この項目だけ再抽選">🔁</button>
-      </div>
-
-      <div style="margin-top:10px;">
-        <label>背景メモ（自由記述）</label>
-        <textarea id="bgMemo" placeholder="背景の補足を自由に"></textarea>
-      </div>
-    </div>
+  <div class="wrap">
 
     <div class="card">
-      <div class="btnbar" style="justify-content:space-between;">
-        <div style="flex:1;">
-          <label>名前</label>
-          <input id="name" type="text" placeholder="例：佐藤 涼介" />
+      <h2>0) キャラ種別</h2>
+      <div class="row">
+        <div class="seg" id="roleSeg">
+          <label><input type="radio" name="role" value="detective" checked> 探偵</label>
+          <label><input type="radio" name="role" value="assistant"> 助手</label>
         </div>
-        <button class="small" id="btnNameRand" title="苗字＋名前をランダム生成">🎲苗字＋名前</button>
-        <button class="small" id="rerollName" title="この項目だけ再抽選">🔁</button>
+        <span class="pill" id="rulePill">技能ルール：—</span>
+        <span class="pill" id="guardPill">技能選択：—</span>
       </div>
 
-      <div style="margin-top:10px;" class="btnbar">
-        <label style="margin:0;">年齢も生成する</label>
-        <input type="checkbox" id="chkAge" />
-        <span class="pill" id="agePill">OFF</span>
+      <div class="btns" style="margin-top:10px">
+        <button class="primary" id="btnRandomAll">🎲 ランダム生成（主要項目）</button>
+        <button id="btnResetSkills">↩ 技能選択リセット</button>
       </div>
-
-      <div class="btnbar" style="justify-content:space-between; margin-top:10px;">
-        <div style="flex:1;">
-          <label>年齢</label>
-          <input id="age" type="text" placeholder="（基本：相談して決定）" />
-        </div>
-        <button class="small" id="rerollAge" title="この項目だけ再抽選（チェックON時のみ）">🔁</button>
-      </div>
-
-      <details style="margin-top:12px;">
-        <summary>偽名表（折りたたみ表示）</summary>
-        <p class="muted">※ 偽名は入力は自由。表は参照用。</p>
-        <ul class="list" id="aliasList"></ul>
-      </details>
-    </div>
-  </div>
-
-  <h2>タブ3：人物設定（必須）</h2>
-  <div class="grid3">
-    <div class="card">
-      <div class="btnbar" style="justify-content:space-between;">
-        <div style="flex:1;">
-          <label>身長</label>
-          <select id="height"></select>
-        </div>
-        <button class="small" id="rerollHeight">🔁</button>
-      </div>
-
-      <div class="btnbar" style="justify-content:space-between; margin-top:10px;">
-        <div style="flex:1;">
-          <label>ファッション（目立つもの）</label>
-          <select id="fashion"></select>
-        </div>
-        <button class="small" id="rerollFashion">🔁</button>
-      </div>
-
-      <div class="btnbar" style="justify-content:space-between; margin-top:10px;">
-        <div style="flex:1;">
-          <label>職業</label>
-          <select id="job"></select>
-        </div>
-        <button class="small" id="rerollJob">🔁</button>
-      </div>
+      <p class="muted" style="margin-top:8px">
+        ※「主要項目」＝名前/偽名/身長/ファッション/好き嫌い/（探偵なら異常な癖）/（助手ならゲスト）/背景 まで入れます。職業・年齢などは自由入力のままでもOK。
+      </p>
     </div>
 
-    <div class="card">
-      <div class="btnbar" style="justify-content:space-between;">
-        <div style="flex:1;">
-          <label>好きなもの（重複なし）</label>
-          <select id="like"></select>
-        </div>
-        <button class="small" id="rerollLike">🔁</button>
-      </div>
-
-      <div class="btnbar" style="justify-content:space-between; margin-top:10px;">
-        <div style="flex:1;">
-          <label>嫌いなもの（重複なし）</label>
-          <select id="dislike"></select>
-        </div>
-        <button class="small" id="rerollDislike">🔁</button>
-      </div>
-
-      <div id="quirkBlock" style="margin-top:10px;">
-        <div class="btnbar" style="justify-content:space-between;">
-          <div style="flex:1;">
-            <label>異常な癖（探偵のみ）</label>
-            <select id="quirk"></select>
+    <div class="grid2">
+      <div class="card">
+        <h2>1) 基本情報</h2>
+        <div class="grid2">
+          <div>
+            <label>名前</label>
+            <input id="name" type="text" placeholder="例：東雲 恒一 / Sherlock Holmes など" />
           </div>
-          <button class="small" id="rerollQuirk">🔁</button>
+          <div>
+            <label>偽名（任意）</label>
+            <input id="alias" type="text" placeholder="例：『便利屋』 / アンノウン / 酒の名前 など" />
+            <p class="muted">（ランダムで「偽名表」っぽい方向性も入れられます）</p>
+          </div>
+          <div>
+            <label>年齢（自由）</label>
+            <input id="age" type="number" min="0" placeholder="例：27" />
+          </div>
+          <div>
+            <label>身長（自由／表から）</label>
+            <select id="height"></select>
+          </div>
+          <div>
+            <label>ファッション（目立つ特徴1つ）</label>
+            <select id="fashion"></select>
+          </div>
+          <div>
+            <label>職業（年齢に見合ったもの）</label>
+            <select id="job"></select>
+          </div>
+          <div>
+            <label>好きなもの（1つ）</label>
+            <select id="like"></select>
+          </div>
+          <div>
+            <label>嫌いなもの（1つ）</label>
+            <select id="dislike"></select>
+          </div>
         </div>
-        <p class="muted">※ 探偵のみ。助手のときは非表示。</p>
+
+        <div id="detectiveOnlyBasics" style="margin-top:12px">
+          <label>異常な癖（探偵のみ）</label>
+          <select id="weirdHabit"></select>
+          <p class="muted">（癖のカテゴリからランダムで1つ選びます）</p>
+        </div>
+
+        <div style="margin-top:12px">
+          <label>自由メモ（背景設定など）</label>
+          <textarea id="memo" placeholder="自由記述：口癖/人間関係/たまり場/事件に対する姿勢など"></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>2) クラス／背景（クラス連動）</h2>
+
+        <div id="detectiveClassBox">
+          <label>探偵のクラス</label>
+          <div class="seg" id="detectiveClassSeg" style="margin-top:6px">
+            <label><input type="radio" name="dclass" value="blood" checked> 運命の血統</label>
+            <label><input type="radio" name="dclass" value="talent"> 天性の才能</label>
+            <label><input type="radio" name="dclass" value="mania"> マニア</label>
+          </div>
+        </div>
+
+        <div id="assistantClassBox" class="hide">
+          <label>助手のクラス</label>
+          <div class="seg" id="assistantClassSeg" style="margin-top:6px">
+            <label><input type="radio" name="aclass" value="justice" checked> 正義の人</label>
+            <label><input type="radio" name="aclass" value="passion"> 情熱の人</label>
+            <label><input type="radio" name="aclass" value="involved"> 巻き込まれの人</label>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <label>背景（クラス連動の候補）</label>
+          <select id="background"></select>
+          <p class="muted">（自作もOK。ランダム生成時はここも入ります）</p>
+        </div>
+
+        <div style="margin-top:12px">
+          <h3 style="margin:0 0 6px; font-size:14px;">アクション（自動付与）</h3>
+          <div class="actions" id="actionsBox"></div>
+          <p class="muted">コストは助手の【余裕】消費。探偵は「フタリソウサ」、助手は「食らいつく」を必ず獲得。</p>
+        </div>
+
+        <div id="assistantMental" class="hide" style="margin-top:12px">
+          <h3 style="margin:0 0 6px; font-size:14px;">メンタル（助手のみ）</h3>
+          <div class="row">
+            <span class="pill">余裕：<b id="yoyu">0</b></span>
+            <span class="pill">心労：<b id="shinro">0</b>（3でロスト）</span>
+          </div>
+          <p class="muted">初期は 余裕0 / 心労0（セッション中に変動）</p>
+        </div>
+
+        <details id="guestBox" class="hide" style="margin-top:12px">
+          <summary>ゲスト（助手のみ：作成段階で1人）</summary>
+          <div class="grid2" style="margin-top:10px">
+            <div>
+              <label>ゲスト名</label>
+              <input id="guestName" type="text" placeholder="例：小島 玲奈 / Rachel" />
+            </div>
+            <div>
+              <label>ゲスト技能（1つ）</label>
+              <select id="guestSkill"></select>
+            </div>
+            <div style="grid-column:1/-1">
+              <label>関係</label>
+              <select id="guestRelation"></select>
+            </div>
+          </div>
+          <p class="muted">※ゲストの技能は、プレイヤーの技能候補からも選べる想定で「全技能リスト」から1つ選択できるようにしています。</p>
+        </details>
+
+        <details style="margin-top:12px">
+          <summary>パートナー欄（作成時は空でもOK）</summary>
+          <div class="grid2" style="margin-top:10px">
+            <div><label>パートナーの名前</label><input id="partnerName" type="text" placeholder="（空欄でもOK）"></div>
+            <div><label>呼び名</label><input id="partnerCall" type="text" placeholder="例：相棒 / 先生 / 君 など"></div>
+            <div><label>気に入ったところ</label><input id="partnerLike" type="text" placeholder="（空欄でもOK）"></div>
+            <div><label>気に入らないところ</label><input id="partnerDislike" type="text" placeholder="（空欄でもOK）"></div>
+          </div>
+        </details>
+
       </div>
     </div>
 
     <div class="card">
-      <label>人物メモ（自由記述）</label>
-      <textarea id="charMemo" placeholder="口調／一人称／見た目の補足など"></textarea>
-    </div>
-  </div>
+      <h2>3) 技能（数ガード付き）</h2>
+      <p class="muted" id="skillsHelp">—</p>
 
-  <h2>タブ2：技能・アクション（自動生成＋微調整）</h2>
-  <div class="row two">
-    <div class="card">
-      <div class="btnbar">
-        <button class="primary" id="btnRandSkills">🎲 技能をルール通り生成</button>
-        <button class="primary" id="btnRandActions">🎲 アクションをルール通り生成</button>
-        <button id="btnRandBoth">🎲 技能＋アクション生成</button>
+      <div class="skills" id="skillsGrid"></div>
+
+      <div class="row" style="margin-top:10px">
+        <span class="pill" id="reqPill">要件：—</span>
+        <span class="pill" id="freePill">自由枠：—</span>
+        <span class="pill" id="totalPill">合計：—</span>
       </div>
-      <p class="muted">技能は重複なし／クラス別の取得数に従う。固定技能は自動付与。</p>
-      <div>
-        <label>技能一覧（カテゴリ別）</label>
-        <div id="skillsView" class="mono"></div>
-      </div>
+
+      <p class="muted" style="margin-top:8px">
+        ガード仕様：カテゴリ上限と合計上限を超えるチェックはブロックします。要件未達カテゴリは赤表示になります（合計が足りない/偏っている等も見えるように）。
+      </p>
     </div>
 
     <div class="card">
-      <p><b>助手メンタル</b>（助手のみ）</p>
-      <div class="btnbar" style="gap:10px;">
-        <div style="flex:1;">
-          <label>余裕（初期0）</label>
-          <input id="yoyuu" type="text" value="0" />
-        </div>
-        <div style="flex:1;">
-          <label>心労（初期0 / 3でロスト）</label>
-          <input id="shinrou" type="text" value="0" />
-        </div>
+      <h2>4) 出力（コピペ用）</h2>
+      <div class="btns">
+        <button class="primary" id="btnExport">📤 テキスト出力</button>
       </div>
-
-      <div style="margin-top:12px;">
-        <label>アクション一覧</label>
-        <div id="actionsView" class="mono"></div>
-      </div>
-
-      <div id="guestBlock" style="margin-top:12px;">
-        <p><b>ゲスト</b>（助手のみ・任意）</p>
-        <div class="btnbar" style="justify-content:space-between;">
-          <div style="flex:1;">
-            <label>ゲスト名</label>
-            <input id="guestName" type="text" placeholder="例：星野 七海" />
-          </div>
-          <button class="small" id="rerollGuestName">🔁</button>
-        </div>
-        <div class="btnbar" style="justify-content:space-between; margin-top:10px;">
-          <div style="flex:1;">
-            <label>ゲスト技能</label>
-            <select id="guestSkill"></select>
-          </div>
-          <button class="small" id="rerollGuestSkill">🔁</button>
-        </div>
-        <div class="btnbar" style="justify-content:space-between; margin-top:10px;">
-          <div style="flex:1;">
-            <label>ゲスト関係</label>
-            <select id="guestRel"></select>
-          </div>
-          <button class="small" id="rerollGuestRel">🔁</button>
-        </div>
-      </div>
+      <pre class="out" id="output">（ここに出力されます）</pre>
     </div>
-  </div>
 
-  <h2>出力（ココフォリア用テキスト例）</h2>
-  <div class="card">
-    <div class="btnbar">
-      <button class="primary" id="btnBuildOutput">🧾 出力を更新</button>
-      <button id="btnCopy">📋 コピー</button>
-    </div>
-    <div id="output" class="mono" style="margin-top:10px;"></div>
   </div>
 
 <script>
-/** ========= 乱数ユーティリティ ========= */
-function randInt(min, max){ // inclusive
-  return Math.floor(Math.random()*(max-min+1))+min;
-}
-function pick(arr){
-  return arr[randInt(0, arr.length-1)];
-}
-function pickUnique(arr, usedSet){
-  const candidates = arr.filter(x => !usedSet.has(x));
-  if(candidates.length === 0) return null;
-  const v = pick(candidates);
-  usedSet.add(v);
-  return v;
-}
+/** ========= データ（メモに基づく） ========= **/
 
-/** ========= データ ========= */
-const ROLE = {
-  detective: { label: "探偵", classes: ["運命の血統","天性の才能","マニア"] },
-  assistant: { label: "助手", classes: ["正義の人","情熱の人","巻き込まれの人"] },
-};
-
-const BACKGROUNDS = {
-  "運命の血統": [
-    "名探偵の先祖（真）","名探偵の先祖（想）","親が世界的探偵","街の名探偵","推理作家","育ての親",
-    "堕ちた名探偵","大悪人の血","隠された血筋","クローン"
-  ],
-  "天性の才能": [
-    "超エリート","瞬間記憶能力","知識の泉","スパルタ教育","既に名探偵","憧れの背中",
-    "ライバル","かつての名探偵","孤立した名探偵","人工名探偵"
-  ],
-  "マニア": [
-    "サスペンスマニア","死体マニア","科学マニア","いわゆるオタク","人間マニア","書物マニア",
-    "オカルトマニア","探偵マニア","暴走する知識欲","正義のマニア"
-  ],
-  "正義の人": ["お人よし","許せない","納得したい","利用している","頼れる協力者","正義の同志"],
-  "情熱の人": ["能力にほれ込んだ","人柄にほれ込んだ","一目惚れ","ウマが合った","対立","放っておけない"],
-  "巻き込まれの人": ["一方的に気に入られた","リアクション要員","過去のツケ","必要な人材","親しい人","偶然の積み重ね"],
-};
-
-const SKILLS = {
-  洞察: ["嘘","変化","外見","物理","現場","天気"],
-  鑑識: ["交通","情報","指紋","科学","法医学","生物"],
-  人間: ["社交","家事","噂話","説得","流行","ビジネス"],
-  肉体: ["捕縛","防御","根性","体力","突破","追跡"],
-};
-
-const FIXED_SKILLS = {
-  "正義の人": ["説得","突破"],
-  "情熱の人": ["社交","根性"],
-  "巻き込まれの人": ["防御"],
-};
-
-const SKILL_RULES = {
-  "運命の血統": { 洞察: 2, 鑑識: 2, 人間: 0, 肉体: 0, free: 2 },
-  "天性の才能": { 洞察: 2, 鑑識: 3, 人間: 0, 肉体: 0, free: 1 },
-  "マニア":     { 洞察: 2, 鑑識: 2, 人間: 1, 肉体: 0, free: 1 },
-  "正義の人":   { 洞察: 0, 鑑識: 0, 人間: 2, 肉体: 0, free: 1 },
-  "情熱の人":   { 洞察: 0, 鑑識: 0, 人間: 2, 肉体: 0, free: 1 },
-  "巻き込まれの人": { 洞察: 0, 鑑識: 0, 人間: 2, 肉体: 2, free: 0 },
-};
-
-const BASE_ACTIONS = {
-  detective: [{
-    name:"フタリソウサ", type:"補助", cost:"なし",
-    text:"捜査フェイズのシーン終了時。互いの感情を1つ強い感情にして次のシーンをフタリソウサシーンに変更。"
-  }],
-  assistant: [{
-    name:"食らいつく", type:"補助", cost:"1",
-    text:"判定後。パートナーへの感情を1つ強い感情にして振り直し（十面体化可）。"
-  }],
-};
-
-const CLASS_ACTIONS = {
-  "運命の血統": [{ name:"血の直感", type:"補助", cost:"1", text:"判定後。使用したサイコロの目をすべて4に変更。" }],
-  "天性の才能": [{ name:"当然知っている", type:"補助", cost:"なし", text:"いつでも。好きな技能1つ修得（セッション終了で消失）。1セッション2回まで。" }],
-  "マニア": [{ name:"膨大なデータベース", type:"補助", cost:"2", text:"重要でないキーワード獲得時。さらに重要でないキーワード1つ。1セッション1回まで。" }],
-  "正義の人": [{ name:"気合を入れる", type:"常駐", cost:"なし", text:"初動捜査の判定時、有利を得る。" }],
-  "情熱の人": [{ name:"見直す", type:"補助", cost:"なし", text:"捜査フェイズ中、探偵の判定に4以上があれば使用。探偵への感情1つ獲得。1セッション1回。" }],
-  "巻き込まれの人": [{ name:"こうなるとわかってた", type:"常駐", cost:"なし", text:"たまり場で余裕獲得時、獲得余裕+1。" }],
-};
-
-const SURNAME = [
-  "佐藤","前田","小島","柴田","秋山","渡辺","鈴木","木村","佐々木","山崎","森","田中","長谷川","太田","西村","伊藤",
-  "上田","藤原","小林","大西","高橋","皇","安藤","村上","石田","関","荒井","小鳥遊","中川","星野","榎本","飯田","四季",
-  "杉本","馬場","広瀬","那須","岩田","早川","東雲","水野","世界","暁","天野","堀","宇田川","西山","角田","鏡","鎌田",
-  "小倉","岡","坂田","鳳","大川","武井","小笠原","芥","萩野","手塚","槐","臼井","巽",
-  "シュルツ","ミュラー","シュナイダー","マイヤー","ウェーバー","ホフマン","トーマ","ベルナール","トマ","プティ","デュラン",
-  "シュ","リュウ","チョウ","シュウ","ポポフ","モロゾフ","イワノフ","キム","イ","パク",
-  "モリアーティ","ホームズ","ワトスン","ハドソン","レストレード","アドラー","ターナー","バスカヴィル"
+// 名前表
+const lastNames = [
+  "佐藤","前田","小島","柴田","秋山","渡辺","鈴木","木村","佐々木","山崎","森","田中","長谷川","太田","西村","伊藤","上田","藤原","小林","大西","高橋","皇","安藤","村上","石田","関","荒井","小鳥遊","中川","星野","榎本","飯田","四季","杉本","馬場","広瀬","那須","岩田","早川","東雲","水野","世界","暁","天野","堀","宇田川","西山","角田","鏡","鎌田","小倉","岡","坂田","鳳","大川","武井","小笠原","芥","萩野","手塚","槐","臼井","巽",
+  "シュルツ","ミュラー","シュナイダー","マイヤー","ウェーバー","ホフマン","トーマ","ベルナール","トマ","プティ","デュラン","シュ","リュウ","チョウ","シュウ","ポポフ","モロゾフ","イワノフ","キム","イ","パク",
+  "モリアーティ","ホームズ","ワトスン","ハドソン","レストレード","ゴルジアーノ","ファーガソン","スタン","ジェーン","モラン","ミルヴァートン","アドラー","ハリソン","ウィンディンパンク","ターナー","バスカヴィル","ホープ","ステイプルトン","トレバー","モースタン","マスグレーヴ"
+];
+const firstNames = [
+  "涼介","ひより","空","琴音","竜","さくら","智也","美也","大和","美月","優","杏","快人","彩音","大翔","美羽","瑛太","真央","楓真","百花","仁","美優","幹太","みずき","陽向","菜月","隼","優菜","歩夢","優衣","瑠偉","乃愛","悠希","こころ","陽斗","莉子","聖也","雪乃","太陽","玲奈","龍之介","美咲","翔太朗","和奏","隼人","雅","樹","愛奈","湊","ひなた","陽翔","花音","伊織","心春","蒼真","凜","龍生","花","悠真","心愛","善","芽衣","岳","菫","慶","蘭","右京","雄大","萌","駿","千尋","陸","楓","涼太","七海","蓮","未来","薫","真理子","直人","優花","貴大","海斗","桃子","拓海","佳奈","亮","彩香","大地","里奈","匠","亜美","翼","茜","和也","未来","一輝","奈々","庸平","早紀","海","杏奈","亮太","千夏","左門","綾乃",
+  "フェリックス","アニカ","ルカ","ミア","ルイス","ソフィア","ルカス","アナ","マクシミリアン","ハンナ","フィン","レナ","レオ","ロラ","アダム","ルイーズ","ガブリエル","クロエ","ユーゴ","イネス","ティメオ","レア","チェンユ","カキン","ハオラン","シーハン","ハオユー","ユハン","ユゼ","イイ","ピョートル","エヴァ","レオニード","タイシャ","イヴァン","エカチェリーナ","ジフン","ジミン","ドンヒョン","ハウン","ジョンウ","スミン",
+  "ジェームズ","ルーシー","シャーロック","セシル","ジョン","レイチェル","マイクロフト","モード","スコット","エディス","ジュセッペ","エミリア","ロバート","ユージニア","シドニー","キャリー","アーサー","メリー","セバスチャン","スーザン","チャールズ","サラ","エバンス","アイリーン","ジョセフ","アニー","バレンタイン","フランシス","ホール","マリア","ヘンリー","ベリル","ジェファーソン","マリー","ジャック","エフィ","ビクター","ジェーン","ビリー","メアリー","レジナルド","ジェナーロ"
 ];
 
-const GIVEN = [
-  "涼介","ひより","空","琴音","竜","さくら","智也","美也","大和","美月","優","杏","快人","彩音","大翔","美羽","瑛太","真央",
-  "楓真","百花","仁","美優","幹太","みずき","陽向","菜月","隼","優菜","歩夢","優衣","瑠偉","乃愛","悠希","こころ","陽斗",
-  "莉子","聖也","雪乃","太陽","玲奈","龍之介","美咲","翔太朗","和奏","隼人","雅","樹","愛奈","湊","ひなた","陽翔","花音",
-  "伊織","心春","蒼真","凜","花","悠真","心愛","善","芽衣","岳","菫","慶","蘭","右京","雄大","萌","駿","千尋","陸","楓",
-  "七海","蓮","未来","薫","真理子","直人","優花","貴大","海斗","桃子","拓海","佳奈","亮","彩香","里奈","匠","亜美","翼",
-  "フェリックス","アニカ","ミア","ソフィア","ルカス","ハンナ","フィン","レナ","レオ","クロエ","エヴァ","イヴァン","ジェームズ",
-  "ルーシー","ジョン","マイクロフト","モード","アーサー","メリー","セバスチャン","サラ","アイリーン"
-];
-
-const ALIAS_TABLE = [
+// 偽名表（方向性）
+const aliasSeeds = [
   "好きな酒の名前","好きな色の名前","好きな動物の名前","好きな惑星の名前","好きな映画の名前","好きなお菓子の名前",
   "好きな小説の名前","好きな星座の名前","好きな作家の名前","好きな刃物の名前","好きな銃器の名前",
   "来ているファッションの名前","付けているアクセサリーの名前","好きな料理の名前",
-  "ただの通りすがり","番号で呼ばれている","探偵／助手","アンノウン","通称『便利屋』","不明"
+  "ただの通りすがり","番号で呼ばれている","探偵","助手","アンノウン","通称『便利屋』","不明"
 ];
 
-const HEIGHT_TABLE = [
-  "非常に高い","高め","平均的","低め","非常に低い","パートナーより少し高い","パートナーより少し低い"
+const heightTable = ["非常に高い","高め","平均的","低め","非常に低い","パートナーより少し高い","パートナーより少し低い"];
+
+const fashionTable = [
+  "高級志向","スーツ","カジュアルウェア","フォーマルウェア","スポーツウェア","リーズナブル","サングラス","Yシャツ",
+  "Tシャツ","ネックレス","帽子","ミリタリー風","ピアス","ジャージ","エクステ","和風","指輪","チョーカー","サンダル",
+  "ジャンパー","インパネスコート","白衣","グローブ","パイプ","チョッキ","和服","カラフルな色使い","パートナーと同じ","ファッションにこだわりがない"
 ];
 
-const FASHION_TABLE = [
-  "高級志向","スーツ","カジュアルウェア","フォーマルウェア","スポーツウェア","リーズナブル","サングラス","Yシャツ","Tシャツ",
-  "ネックレス","帽子","ミリタリー風","ピアス","ジャージ","エクステ","和風","指輪","チョーカー","サンダル","ジャンパー",
-  "インパネスコート","白衣","グローブ","パイプ","チョッキ","和服","カラフルな色使い","パートナーと同じ","ファッションにこだわりがない"
+const likeDislikeTable = [
+  "死体","犬","猫","サスペンス","物語","アイドル","犯罪","オカルト","健康","ジャンクフード","高級な食事","ファッション",
+  "権力","名誉","友情","おやつ","地元","家族","警察","音楽","銃","謎","探偵","パートナー","パートナーの好きなもの","パートナーの嫌いなもの","特になし",
+  "チェスや将棋などボードゲーム","人間","知らないこと"
 ];
 
-const LIKE_DISLIKE_TABLE = [
-  "死体","犬","猫","サスペンス","物語","アイドル","犯罪","オカルト","健康","ジャンクフード","高級な食事","ファッション","権力",
-  "名誉","友情","おやつ","地元","家族","警察","音楽","銃","謎","探偵","パートナー","パートナーの好きなもの",
-  "パートナーの嫌いなもの","特になし","チェスや将棋などボードゲーム","人間","知らないこと"
-];
-
-const JOB_TABLE = [
+const jobTable = [
   "パートナーと同じ","フリーター","学生（優秀）","学生（普通）","学生（不真面目）","教師・講師","会社員","主夫・主婦","自営業",
-  "ディレッタント","刑事（新人）","刑事（エリート）","公務員","探偵助手","探偵（有名）","探偵（普通）","探偵（不人気）",
-  "無職","研究者","作家"
+  "ディレッタント","刑事（新人）","刑事（エリート）","公務員","探偵助手","探偵（有名）","探偵（普通）","探偵（不人気）","無職","研究者","作家"
 ];
 
-const QUIRK_TABLE = [
-  "猛烈に感謝の言葉を述べる","皮肉ばかりを言ってしまう","相手の言葉を肯定してから否定する","ニヤニヤ笑いながら謝る",
-  "相手の言葉を聞かずに自分だけ喋る","「こうは考えられないでしょうか」","「それとも、何か隠していることでも？」",
-  "「妙ですね」","「だいたいわかりました」","「黙っていろ」",
-  "勝手に捜査対象の鞄や引き出しを空ける","警察の捜査に割り込む","捜査のためにハッキングや不法侵入を行う",
-  "許可されていないところに立ち入る","証拠品を許可なく解体する","捜査対象を騙して情報を聞き出す",
-  "寝食を忘れて捜査して急に倒れる","事件の相関図を壁や床に書き始める","事件の話を止められない",
-  "パートナーを置いて先に行ってしまう","パートナーに事件クイズを出題する","パートナーに懇切丁寧に事件を説明する"
+// 探偵の異常な癖（カテゴリごと→まとめて1つ選ぶ）
+const weirdHabits = [
+  // 口から出る癖
+  "猛烈に感謝の言葉を述べる","皮肉ばかりを言ってしまう","相手の言葉を肯定してから否定する","ニヤニヤ笑いながら謝る","相手の言葉を聞かずに自分だけ喋る",
+  "「こうは考えられないでしょうか」","「それとも、何か隠していることでも？」","「妙ですね」","「だいたいわかりました」","「黙っていろ」",
+  // 強引な操作の癖
+  "勝手に捜査対象の鞄や引き出しを空ける","警察の捜査に割り込む","捜査のためにハッキングや不法侵入を行う","許可されていないところに立ち入る","警察の捜査を盗み見や盗み聞きする",
+  "証拠品を許可なく解体する","捜査対象を騙して情報を聞き出す","勝手に関係者の持ち物を触る","証拠品を勝手に持ち歩いている","勝手に鑑識を始める",
+  // すっとぼけ癖
+  "自分の身分を偽って関係者に話を聞く","情報を隠しながら話を聞く","パートナーと演技をして情報を聞き出そうとする","通行人のふりをして関係者の話を盗み聞きする",
+  "偶然を装って証拠品を手に入れてしまう","わざとらしくすっとぼける","関係者を怒らせる演技をして情報を引き出す","やんわりと関係者を脅す",
+  "落とし物をしたと主張して現場や証拠品を漁る","関係者に誘導尋問を仕掛ける",
+  // 事件に夢中癖
+  "パートナーの体を使って事件を再現しようとする","謎を解くことが楽しくて笑ってしまう","寝食を忘れて捜査をしていたので急に倒れる",
+  "考え事をしていて誰の声も聞こえない","事件の相関図を手近な壁や床に書き始める","事件に関係する言葉を次々に発して止まらない",
+  "事件解決以外のことをまったく考えていない","事件の流れをぶつぶつと喋り始める","事件現場に踏み込んで調べ物をする","食事中でもかまわず事件の話をする",
+  // パートナーとの癖
+  "パートナーの信頼に甘える","パートナーを置いて先に行ってしまう","パートナーに事件についてどう思っているか質問する","パートナーに自慢する","パートナーに事件に関するクイズを出題する",
+  "パートナーと些細なことで喧嘩をする","パートナーに教師のようにふるまう","パートナーがついてくる前提で勝手に動く","パートナーに対して懇切丁寧に事件を説明する","パートナーの耳元でいきなり喋り始める",
+  // 何かしている癖
+  "大量の本を読んでいる","好きな音楽を大音量で流している","何かの数式を解いている","大量の好物をずっと食べている","ずっとパソコンやスマートフォンなどの画面と向かい合って調べている",
+  "小さな謎を解いている","チェスや将棋などを指している","喫茶店の席に座って何かを待っている","ずっと眠っていたが急に起きる","しばらく何もしない",
+  // 奇想天外な癖
+  "やめろと言われていることをする","しばらく姿を消していたが戻って来た","予想もつかないところ（地中や空中など）から登場する","何かを思いついて突然走り出す","ふがいない自分を責める",
+  "知らないうちに事件の謎を一つ解いていた","事件について分かった様子だが誰にも教えない","置き手紙やメールで報告をするも姿が見えない","時計を見て急に動き出した","事件とは関係なさそうな新聞の記事を読んでいる",
+  // 急なひらめきの癖
+  "食事をとっていたら急に謎が解ける","助手との何気ない会話から急に謎が解ける","聞こえてきた会話から急に謎が解ける","風呂に入っていたら急に謎が解ける","夢の中で急に謎が解ける",
+  "風が吹いて飛んできたもので謎が解ける","本を読んでいたら事件のヒントが見つかる","現場を再び訪れてひらめく","資料を確認している最中にひらめく","関係者と会話をしている最中にひらめく",
+  // 喜怒哀楽の癖
+  "急に泣く","急に怒る","急に笑いだす","急にハイテンションになる","急に喜ぶ","急に叫ぶ","急にニヤニヤし始める","急にこの事件の悲しさを語る","淡々と物事を進める","ロボットのように決められたことだけをやる"
 ];
 
-const GUEST_REL = [
-  "昔のバディ","友人","親友","顔見知り","戦友","腐れ縁","過去に何かあった","いとこ","友達の友達","遠い親戚","近所の人",
-  "迷惑をかけた","師匠","ネットで知り合った","偶然知り合った","前に一度だけあった","パートナーのことで相談された",
-  "パートナーについて質問された","幼馴染","パートナーを追っている","一方的に知られている"
-];
-
-/** ========= 状態 ========= */
-const state = {
-  skills: [],
-  actions: [],
+// 背景（クラス連動）
+const backgroundsDetective = {
+  blood: [
+    "名探偵の先祖（真）","名探偵の先祖（想）","親が世界的探偵","街の名探偵","推理作家","育ての親","堕ちた名探偵","大悪人の血","隠された血筋","クローン"
+  ],
+  talent: [
+    "超エリート","瞬間記憶能力","知識の泉","スパルタ教育","既に名探偵","憧れの背中","ライバル","かつての名探偵","孤立した名探偵","人工名探偵"
+  ],
+  mania: [
+    "サスペンスマニア","死体マニア","科学マニア","いわゆるオタク","人間マニア","書物マニア","オカルトマニア","探偵マニア","暴走する知識欲","正義のマニア"
+  ]
 };
 
-/** ========= DOM ========= */
-const el = (id)=>document.getElementById(id);
-const roleEl = el("role");
-const classEl = el("class");
-const bgEl = el("background");
-const quirkBlockEl = el("quirkBlock");
-const guestBlockEl = el("guestBlock");
-const ageChkEl = el("chkAge");
-const agePillEl = el("agePill");
+const backgroundsAssistant = {
+  justice: ["お人よし","許せない","納得したい","利用している","頼れる協力者","正義の同志"],
+  passion: ["能力にほれ込んだ","人柄にほれ込んだ","一目惚れ","ウマが合った","対立","放っておけない"],
+  involved: ["一方的に気に入られた","リアクション要員","過去のツケ","必要な人材","親しい人","偶然の積み重ね"]
+};
 
-function fillSelect(selectEl, items){
-  selectEl.innerHTML = "";
-  for(const it of items){
-    const opt = document.createElement("option");
-    opt.value = it;
-    opt.textContent = it;
-    selectEl.appendChild(opt);
+const guestRelations = [
+  "昔のバディ","友人","親友","顔見知り","戦友","腐れ縁","過去に何かあった","いとこ","友達の友達","遠い親戚","近所の人","迷惑をかけた","師匠",
+  "ネットで知り合った","偶然知り合った","前に一度だけあった","パートナーのことで相談された","パートナーについて質問された","幼馴染","パートナーを追っている","一方的に知られている"
+];
+
+// 技能（カテゴリ）
+const skillsByCat = {
+  insight: [
+    { key:"嘘", desc:"嘘に敏感。喋り方/汗/目線などから違和感を感じ取る。" },
+    { key:"変化", desc:"人物や風景の変化を見逃さない（間違い探し）。" },
+    { key:"外見", desc:"外見から情報を引き出す（怪我跡/髪型/隠し事など）。" },
+    { key:"物理", desc:"物理学の見地から不自然さを見抜く。" },
+    { key:"現場", desc:"現場から直感が働き、わずかな証拠から鍵を見つける。" },
+    { key:"天気", desc:"天気図などから事象の不自然さを見つける。" }
+  ],
+  forensic: [
+    { key:"交通", desc:"交通情報・道路・乗り物の知識。" },
+    { key:"情報", desc:"コンピューター関係/ネット検索の情報収集。" },
+    { key:"指紋", desc:"指紋鑑定や指紋情報の獲得。" },
+    { key:"科学", desc:"科学的見地で証拠を調べる。" },
+    { key:"法医学", desc:"解剖・人体調査・DNA鑑定など。" },
+    { key:"生物", desc:"動物/昆虫/魚/ウィルス等の調査。" }
+  ],
+  human: [
+    { key:"社交", desc:"素早く仲良くなる。距離を詰めるのが得意。" },
+    { key:"家事", desc:"掃除/洗濯/育児/食事など家事全般が得意。" },
+    { key:"噂話", desc:"人や組織の噂話を拾うネットワーク。" },
+    { key:"説得", desc:"止める/させる。心に響く言葉や用意で動かす。" },
+    { key:"流行", desc:"トレンド/今風の喋り/最新技術に詳しい。" },
+    { key:"ビジネス", desc:"商談・取引・金銭交渉にも強い。" }
+  ],
+  body: [
+    { key:"捕縛", desc:"捕まえて動けなくする。ロープ/手錠扱いも。" },
+    { key:"防御", desc:"受け身/妨害回避。虫の大群/海落ち等にも。" },
+    { key:"根性", desc:"限界以上の力。気合が必要なとき。" },
+    { key:"体力", desc:"探す/走る/聞き込みなどとにかく体力。" },
+    { key:"突破", desc:"扉破り/包囲突破/捕まる等を肉体で解決。" },
+    { key:"追跡", desc:"逃走犯追跡/足跡/カーチェイス。追いつくは捕縛。" }
+  ]
+};
+
+const allSkillKeys = Object.values(skillsByCat).flat().map(s => s.key);
+
+// クラス別：技能習得ルール（選択枠のみ／固定は別）
+const rules = {
+  detective: {
+    blood:  { label:"探偵：運命の血統",  fixed: [], picks: { insight:2, forensic:2 }, free:2 },
+    talent: { label:"探偵：天性の才能",  fixed: [], picks: { insight:2, forensic:3 }, free:1 },
+    mania:  { label:"探偵：マニア",      fixed: [], picks: { insight:2, forensic:2, human:1 }, free:1 }
+  },
+  assistant: {
+    justice: { label:"助手：正義の人", fixed:["説得","突破"], picks:{ human:2 }, free:1 },
+    passion: { label:"助手：情熱の人", fixed:["社交","根性"], picks:{ human:2 }, free:1 },
+    involved:{ label:"助手：巻き込まれの人", fixed:["防御"], picks:{ human:2, body:2 }, free:0 }
   }
-}
-function setVisible(node, show){
-  node.style.display = show ? "" : "none";
-}
+};
 
-/** ========= 初期化 ========= */
-function init(){
-  const ul = el("aliasList");
-  ul.innerHTML = "";
-  for(const a of ALIAS_TABLE){
-    const li = document.createElement("li");
-    li.textContent = a;
-    ul.appendChild(li);
+// アクション
+const actionTexts = {
+  baseDetective: {
+    name:"フタリソウサ", type:"補助", cost:"なし",
+    text:"捜査フェイズのシーン終了時に使用。自分とパートナーは互いへの感情を1つ「強い感情」にすることで、次のシーンを「フタリソウサシーン」に変更できる。"
+  },
+  baseAssistant: {
+    name:"食らいつく", type:"補助", cost:"1",
+    text:"判定のサイコロを振った後に使用。パートナーへの感情を1つ「強い感情」にすることで、使用したサイコロを振り直せる（このとき十面体にできる）。"
+  },
+  detective: {
+    blood:  { name:"血の直感", type:"補助", cost:"1", text:"判定後に使用。判定に使用したサイコロの目をすべて4に変更できる。" },
+    talent: { name:"当然知っている", type:"補助", cost:"なし", text:"いつでも使用。好きな技能を1つ修得（セッション終了時に失う）。1セッションにつき2回まで。" },
+    mania:  { name:"膨大なデータベース", type:"補助", cost:"2", text:"重要でないキーワード獲得時に使用。さらに重要でないキーワードを1つ獲得。1セッションにつき1回まで。" }
+  },
+  assistant: {
+    justice: { name:"気合を入れる", type:"常駐", cost:"なし", text:"初動捜査の判定を行うとき、有利を得る。" },
+    passion: { name:"見直す", type:"補助", cost:"なし", text:"捜査フェイズ中、探偵が判定に使ったサイコロに4以上があった場合、感情を1つ獲得。1セッションにつき1回まで。" },
+    involved:{ name:"こうなるとわかってた", type:"常駐", cost:"なし", text:"たまり場フェイズで〔余裕の獲得〕を行うとき、獲得できる余裕が1点上昇する。" }
   }
+};
 
-  fillSelect(el("height"), HEIGHT_TABLE);
-  fillSelect(el("fashion"), FASHION_TABLE);
-  fillSelect(el("job"), JOB_TABLE);
-  fillSelect(el("quirk"), QUIRK_TABLE);
-  fillSelect(el("like"), LIKE_DISLIKE_TABLE);
-  fillSelect(el("dislike"), LIKE_DISLIKE_TABLE);
-
-  fillSelect(el("guestRel"), GUEST_REL);
-  const allSkills = Object.entries(SKILLS).flatMap(([cat, arr]) => arr.map(s => `${cat}:${s}`));
-  fillSelect(el("guestSkill"), allSkills);
-
-  syncClassOptions();
-  syncBackgroundOptions();
-  applyRoleVisibility();
-  updateAgePill();
-  renderSkills();
-  renderActions();
-  buildOutput();
-}
-
-function syncClassOptions(){
-  const role = roleEl.value;
-  fillSelect(classEl, ROLE[role].classes);
-}
-function syncBackgroundOptions(){
-  const cls = classEl.value;
-  fillSelect(bgEl, BACKGROUNDS[cls] ?? []);
-}
-function applyRoleVisibility(){
-  const role = roleEl.value;
-  const isDet = role === "detective";
-  setVisible(quirkBlockEl, isDet);
-  setVisible(guestBlockEl, !isDet);
-  setVisible(el("yoyuu").closest(".btnbar"), !isDet);
-  setVisible(el("shinrou").closest(".btnbar"), !isDet);
-}
-
-function updateAgePill(){
-  agePillEl.textContent = ageChkEl.checked ? "ON" : "OFF";
-}
-
-/** ========= ランダム生成 ========= */
-function genName(){
-  el("name").value = `${pick(SURNAME)} ${pick(GIVEN)}`;
-}
-function genAge(){
-  if(!ageChkEl.checked) return;
-  el("age").value = String(randInt(10, 60));
-}
-function genRole(){
-  roleEl.value = pick(["detective","assistant"]);
-  syncClassOptions();
-  syncBackgroundOptions();
-  applyRoleVisibility();
-}
-function genClass(){
-  const role = roleEl.value;
-  classEl.value = pick(ROLE[role].classes);
-  syncBackgroundOptions();
-}
-function genBackground(){
-  const cls = classEl.value;
-  const arr = BACKGROUNDS[cls] ?? [];
-  if(arr.length) bgEl.value = pick(arr);
-}
-function genHeight(){ el("height").value = pick(HEIGHT_TABLE); }
-function genFashion(){ el("fashion").value = pick(FASHION_TABLE); }
-function genJob(){ el("job").value = pick(JOB_TABLE); }
-function genQuirk(){ el("quirk").value = pick(QUIRK_TABLE); }
-
-function genLikeDislike(){
-  const like = pick(LIKE_DISLIKE_TABLE);
-  let dislike = pick(LIKE_DISLIKE_TABLE);
-  let guard = 0;
-  while(dislike === like && guard < 50){
-    dislike = pick(LIKE_DISLIKE_TABLE);
-    guard++;
-  }
-  el("like").value = like;
-  el("dislike").value = dislike;
-}
-function rerollLikeOnly(){
-  const dislike = el("dislike").value;
-  let like = pick(LIKE_DISLIKE_TABLE);
-  let guard = 0;
-  while(like === dislike && guard < 50){
-    like = pick(LIKE_DISLIKE_TABLE);
-    guard++;
-  }
-  el("like").value = like;
-}
-function rerollDislikeOnly(){
-  const like = el("like").value;
-  let dislike = pick(LIKE_DISLIKE_TABLE);
-  let guard = 0;
-  while(dislike === like && guard < 50){
-    dislike = pick(LIKE_DISLIKE_TABLE);
-    guard++;
-  }
-  el("dislike").value = dislike;
-}
-
-function genGuestName(){
-  el("guestName").value = `${pick(SURNAME)} ${pick(GIVEN)}`;
-}
-function genGuestSkill(){
-  const allSkills = Object.entries(SKILLS).flatMap(([cat, arr]) => arr.map(s => `${cat}:${s}`));
-  el("guestSkill").value = pick(allSkills);
-}
-function genGuestRel(){
-  el("guestRel").value = pick(GUEST_REL);
-}
-
-/** ========= 技能生成 ========= */
-function generateSkillsByRules(){
-  const cls = classEl.value;
-  const rule = SKILL_RULES[cls];
-  if(!rule){
-    state.skills = [];
-    renderSkills();
-    return;
-  }
-
-  const used = new Set();
+/** ========= ユーティリティ ========= **/
+const $ = (id) => document.getElementById(id);
+const rand = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const uniqRand = (arr, n) => {
+  const pool = [...arr];
   const out = [];
-
-  const fixed = FIXED_SKILLS[cls] ?? [];
-  for(const s of fixed){
-    const cat = Object.keys(SKILLS).find(c => SKILLS[c].includes(s)) ?? "不明";
-    if(!used.has(s)){
-      used.add(s);
-      out.push({cat, name:s, fixed:true});
-    }
+  while (pool.length && out.length < n) {
+    out.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
   }
+  return out;
+};
+const escape = (s) => String(s ?? "").replace(/[&<>"']/g, (c)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 
-  for(const cat of ["洞察","鑑識","人間","肉体"]){
-    const need = rule[cat] ?? 0;
-    for(let i=0;i<need;i++){
-      const v = pickUnique(SKILLS[cat], used);
-      if(v === null) break;
-      out.push({cat, name:v, fixed:false});
-    }
+/** ========= 状態 ========= **/
+let state = {
+  role: "detective",
+  dclass: "blood",
+  aclass: "justice",
+  // skills: Set of keys
+  skills: new Set()
+};
+
+/** ========= 初期化 ========= **/
+function initSelect(id, list, placeholder = "選択してください") {
+  const sel = $(id);
+  sel.innerHTML = "";
+  const op0 = document.createElement("option");
+  op0.value = "";
+  op0.textContent = placeholder;
+  sel.appendChild(op0);
+  for (const v of list) {
+    const op = document.createElement("option");
+    op.value = v;
+    op.textContent = v;
+    sel.appendChild(op);
   }
+}
 
-  const free = rule.free ?? 0;
-  const cats = ["洞察","鑑識","人間","肉体"];
-  let guard = 0;
-  for(let i=0;i<free;i++){
-    const availableCats = cats.filter(c => SKILLS[c].some(s => !used.has(s)));
-    if(availableCats.length === 0) break;
-    const cat = pick(availableCats);
-    const v = pickUnique(SKILLS[cat], used);
-    if(v === null){ i--; guard++; if(guard>20) break; continue; }
-    out.push({cat, name:v, fixed:false});
-  }
+function init() {
+  initSelect("height", heightTable, "身長（表）を選択");
+  initSelect("fashion", fashionTable, "ファッション特徴を選択");
+  initSelect("job", jobTable, "職業を選択");
+  initSelect("like", likeDislikeTable, "好きなものを選択");
+  initSelect("dislike", likeDislikeTable, "嫌いなものを選択");
+  initSelect("weirdHabit", weirdHabits, "異常な癖を選択");
 
-  state.skills = out.sort((a,b)=>{
-    const order = {洞察:1,鑑識:2,人間:3,肉体:4};
-    if(order[a.cat] !== order[b.cat]) return order[a.cat]-order[b.cat];
-    if(a.fixed !== b.fixed) return a.fixed ? -1 : 1;
-    return a.name.localeCompare(b.name, "ja");
+  initSelect("guestRelation", guestRelations, "関係を選択");
+  initSelect("guestSkill", allSkillKeys, "技能を選択");
+
+  renderAll();
+
+  // listeners
+  document.querySelectorAll('input[name="role"]').forEach(r => r.addEventListener("change", (e)=>{
+    state.role = e.target.value;
+    // skills reset when role changes (safer)
+    resetSkills();
+    renderAll();
+  }));
+
+  document.querySelectorAll('input[name="dclass"]').forEach(r => r.addEventListener("change", (e)=>{
+    state.dclass = e.target.value;
+    resetSkills();
+    renderAll();
+  }));
+
+  document.querySelectorAll('input[name="aclass"]').forEach(r => r.addEventListener("change", (e)=>{
+    state.aclass = e.target.value;
+    resetSkills();
+    renderAll();
+  }));
+
+  $("btnRandomAll").addEventListener("click", ()=>{
+    randomAll();
   });
 
-  renderSkills();
+  $("btnResetSkills").addEventListener("click", ()=>{
+    resetSkills();
+    renderSkills();
+    renderPills();
+  });
+
+  $("btnExport").addEventListener("click", ()=>{
+    exportText();
+  });
 }
 
-/** ========= アクション生成 ========= */
-function generateActionsByRules(){
-  const role = roleEl.value;
-  const cls = classEl.value;
+function getCurrentClassKey() {
+  return state.role === "detective" ? state.dclass : state.aclass;
+}
 
-  const used = new Set();
-  const out = [];
+function getCurrentRule() {
+  const key = getCurrentClassKey();
+  return rules[state.role][key];
+}
 
-  for(const a of BASE_ACTIONS[role]){
-    if(!used.has(a.name)){
-      used.add(a.name);
-      out.push(a);
-    }
-  }
+/** ========= レンダリング ========= **/
+function renderAll() {
+  // toggle sections
+  const isD = state.role === "detective";
+  $("detectiveClassBox").classList.toggle("hide", !isD);
+  $("assistantClassBox").classList.toggle("hide", isD);
+  $("assistantMental").classList.toggle("hide", isD);
+  $("guestBox").classList.toggle("hide", isD);
+  $("detectiveOnlyBasics").classList.toggle("hide", !isD);
 
-  const ca = CLASS_ACTIONS[cls] ?? [];
-  for(const a of ca){
-    if(!used.has(a.name)){
-      used.add(a.name);
-      out.push(a);
-    }
-  }
+  // sync radio checked
+  document.querySelector(`input[name="role"][value="${state.role}"]`).checked = true;
+  if (isD) document.querySelector(`input[name="dclass"][value="${state.dclass}"]`).checked = true;
+  else document.querySelector(`input[name="aclass"][value="${state.aclass}"]`).checked = true;
 
-  state.actions = out;
+  renderBackground();
   renderActions();
+  renderSkills();
+  renderPills();
 }
 
-/** ========= ビュー ========= */
-function renderSkills(){
-  if(state.skills.length === 0){
-    el("skillsView").textContent = "（まだ生成されていません）";
-    return;
-  }
-  const byCat = {};
-  for(const s of state.skills){
-    byCat[s.cat] ??= [];
-    byCat[s.cat].push(s);
-  }
-  let text = "";
-  for(const cat of ["洞察","鑑識","人間","肉体"]){
-    if(!byCat[cat]?.length) continue;
-    text += `■${cat}\n`;
-    for(const s of byCat[cat]){
-      text += `- ${s.name}${s.fixed ? "（固定）" : ""}\n`;
+function renderBackground() {
+  const isD = state.role === "detective";
+  const key = getCurrentClassKey();
+  const list = isD ? backgroundsDetective[key] : backgroundsAssistant[key];
+  initSelect("background", list, "背景を選択（クラス連動）");
+}
+
+function renderActions() {
+  const isD = state.role === "detective";
+  const key = getCurrentClassKey();
+  const base = isD ? actionTexts.baseDetective : actionTexts.baseAssistant;
+  const extra = isD ? actionTexts.detective[key] : actionTexts.assistant[key];
+
+  const box = $("actionsBox");
+  box.innerHTML = `
+    <div class="a"><b>${escape(base.name)}</b> / タイプ【${escape(base.type)}】/ コスト【${escape(base.cost)}】<br>${escape(base.text)}</div>
+    <div class="a"><b>${escape(extra.name)}</b> / タイプ【${escape(extra.type)}】/ コスト【${escape(extra.cost)}】<br>${escape(extra.text)}</div>
+  `;
+}
+
+function renderSkills() {
+  const rule = getCurrentRule();
+  const fixed = new Set(rule.fixed || []);
+  // ensure fixed always in state.skills
+  for (const f of fixed) state.skills.add(f);
+
+  const req = rule.picks || {};
+  const free = rule.free || 0;
+
+  // Build help text
+  const reqParts = [];
+  for (const [cat, n] of Object.entries(req)) reqParts.push(`${catLabel(cat)} ${n}`);
+  const help = `
+    現在のルール：<b>${escape(rule.label)}</b><br>
+    固定技能：<b>${(rule.fixed?.length ? rule.fixed.join("、") : "なし")}</b> ／
+    要求：<b>${reqParts.length ? reqParts.join("＋") : "なし"}</b> ／
+    自由枠：<b>${free}</b><br>
+    ※自由枠は「どのカテゴリでも」追加で選べます（ただしカテゴリごとの上限と合計上限をガードします）。
+  `;
+  $("skillsHelp").innerHTML = help;
+
+  const grid = $("skillsGrid");
+  grid.innerHTML = "";
+
+  for (const [cat, list] of Object.entries(skillsByCat)) {
+    const catBox = document.createElement("div");
+    catBox.className = "cat";
+    const need = req[cat] || 0;
+
+    // caps: required + free (free can be in any category, so we allow each category up to need+free)
+    const cap = need + free;
+
+    const header = document.createElement("h3");
+    header.innerHTML = `
+      <span>${escape(catLabel(cat))}</span>
+      <span class="muted" id="count_${cat}">0 / ${need}${free ? `（上限${cap}）` : ""}</span>
+    `;
+    catBox.appendChild(header);
+
+    for (const sk of list) {
+      const row = document.createElement("label");
+      row.className = "chk";
+
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.dataset.skill = sk.key;
+      cb.dataset.cat = cat;
+
+      const isFixed = fixed.has(sk.key);
+      cb.checked = state.skills.has(sk.key);
+      cb.disabled = isFixed;
+
+      cb.addEventListener("change", (e)=>{
+        onSkillToggle(e.target);
+      });
+
+      const txt = document.createElement("div");
+      txt.innerHTML = `<b>${escape(sk.key)}</b><div class="muted">${escape(sk.desc)}</div>`;
+
+      row.appendChild(cb);
+      row.appendChild(txt);
+      catBox.appendChild(row);
     }
-    text += "\n";
+    grid.appendChild(catBox);
   }
-  el("skillsView").textContent = text.trim();
+
+  updateSkillCounters();
 }
 
-function renderActions(){
-  if(state.actions.length === 0){
-    el("actionsView").textContent = "（まだ生成されていません）";
-    return;
-  }
-  let text = "";
-  for(const a of state.actions){
-    text += `■${a.name}\n`;
-    text += `  タイプ：${a.type} / コスト：${a.cost}\n`;
-    text += `  ${a.text}\n\n`;
-  }
-  el("actionsView").textContent = text.trim();
+function catLabel(cat) {
+  return ({ insight:"洞察", forensic:"鑑識", human:"人間", body:"肉体" }[cat] || cat);
 }
 
-/** ========= 出力 ========= */
-function buildOutput(){
-  const role = ROLE[roleEl.value].label;
-  const cls = classEl.value;
-  const bg = bgEl.value;
+function updateSkillCounters() {
+  const rule = getCurrentRule();
+  const fixed = new Set(rule.fixed || []);
+  const req = rule.picks || {};
+  const free = rule.free || 0;
+
+  // Count per category excluding fixed? We count selected in category, but fixed are also part of skills and should show as selected.
+  // For meeting "picks" requirements, we count total selected in that category excluding fixed that might belong there too.
+  // However fixed skills like 説得 are in human category and should count as already owned but not as part of "人間カテゴリから2つ" (rule text implies picks, not including fixed).
+  // So: requirement progress counts only "selectable" picks in those categories, excluding fixed skills.
+  const selectedByCat = { insight:0, forensic:0, human:0, body:0 };
+  const selectedByCatNoFixed = { insight:0, forensic:0, human:0, body:0 };
+
+  // create reverse lookup: skill -> category
+  const skillToCat = {};
+  for (const [c, list] of Object.entries(skillsByCat)) {
+    for (const s of list) skillToCat[s.key] = c;
+  }
+
+  for (const sk of state.skills) {
+    const c = skillToCat[sk];
+    if (!c) continue;
+    selectedByCat[c] += 1;
+    if (!fixed.has(sk)) selectedByCatNoFixed[c] += 1;
+  }
+
+  // total selectable picked (excluding fixed)
+  const totalPicked = Object.values(selectedByCatNoFixed).reduce((a,b)=>a+b,0);
+
+  // total max selectable
+  const totalNeed = Object.values(req).reduce((a,b)=>a+b,0) + free;
+
+  // Update per cat counter + color
+  for (const cat of Object.keys(skillsByCat)) {
+    const need = req[cat] || 0;
+    const cap = need + free;
+    const el = $(`count_${cat}`);
+    if (!el) continue;
+    const got = selectedByCatNoFixed[cat];
+
+    el.textContent = `${got} / ${need}${free ? `（上限${cap}）` : ""}`;
+
+    // decorate category box based on meeting minimum requirement (need)
+    const catBox = el.closest(".cat");
+    if (need === 0) {
+      catBox.classList.remove("ng","ok");
+      catBox.classList.add(got > 0 ? "ok" : "");
+    } else {
+      catBox.classList.toggle("ok", got >= need);
+      catBox.classList.toggle("ng", got < need);
+    }
+  }
+
+  // pills
+  const reqParts = [];
+  for (const [cat, n] of Object.entries(req)) reqParts.push(`${catLabel(cat)}${n}`);
+  $("reqPill").textContent = `要件：${reqParts.length ? reqParts.join("＋") : "なし"}`;
+  $("freePill").textContent = `自由枠：${free}`;
+  $("totalPill").textContent = `合計（固定除く）：${totalPicked} / ${totalNeed}`;
+
+  // top pills summary
+  const ok = (totalPicked === totalNeed) && Object.entries(req).every(([cat, n]) => (selectedByCatNoFixed[cat] || 0) >= n);
+  $("guardPill").classList.toggle("ok", ok);
+  $("guardPill").classList.toggle("ng", !ok);
+  $("guardPill").textContent = `技能選択：${ok ? "OK" : "未完/偏りあり"}`;
+
+  // rule pill
+  $("rulePill").textContent = `技能ルール：${rule.label}`;
+}
+
+function renderPills() {
+  updateSkillCounters();
+}
+
+/** ========= 技能：ガードロジック ========= **/
+function onSkillToggle(cb) {
+  const rule = getCurrentRule();
+  const fixed = new Set(rule.fixed || []);
+  const req = rule.picks || {};
+  const free = rule.free || 0;
+
+  const skill = cb.dataset.skill;
+  const cat = cb.dataset.cat;
+
+  // update state tentative
+  if (cb.checked) state.skills.add(skill);
+  else state.skills.delete(skill);
+
+  // fixed safety
+  for (const f of fixed) state.skills.add(f);
+
+  // compute counts (excluding fixed for selectable)
+  const skillToCat = {};
+  for (const [c, list] of Object.entries(skillsByCat)) {
+    for (const s of list) skillToCat[s.key] = c;
+  }
+
+  const selectedByCatNoFixed = { insight:0, forensic:0, human:0, body:0 };
+  for (const sk of state.skills) {
+    const c = skillToCat[sk];
+    if (!c) continue;
+    if (!fixed.has(sk)) selectedByCatNoFixed[c] += 1;
+  }
+
+  const totalPicked = Object.values(selectedByCatNoFixed).reduce((a,b)=>a+b,0);
+  const totalMax = Object.values(req).reduce((a,b)=>a+b,0) + free;
+
+  // per-cat cap
+  const need = req[cat] || 0;
+  const cap = need + free;
+  const gotCat = selectedByCatNoFixed[cat];
+
+  // If over caps, revert checkbox
+  if (cb.checked && gotCat > cap) {
+    cb.checked = false;
+    state.skills.delete(skill);
+    alert(`カテゴリ「${catLabel(cat)}」の上限（${cap}）を超えています。`);
+  } else if (cb.checked && totalPicked > totalMax) {
+    cb.checked = false;
+    state.skills.delete(skill);
+    alert(`技能の合計上限（${totalMax}）を超えています。`);
+  }
+
+  updateSkillCounters();
+}
+
+/** ========= ランダム生成 ========= **/
+function randomAll() {
+  // name
+  const ln = rand(lastNames);
+  const fn = rand(firstNames);
+  $("name").value = `${ln} ${fn}`;
+
+  // alias (direction)
+  const seed = rand(aliasSeeds);
+  $("alias").value = seed.startsWith("通称") ? seed : `（${seed}）`;
+
+  // height / fashion / like / dislike / job (optional random)
+  $("height").value = rand(heightTable);
+  $("fashion").value = rand(fashionTable);
+  $("like").value = rand(likeDislikeTable);
+  // dislike should differ if possible
+  let dis = rand(likeDislikeTable);
+  if (dis === $("like").value) dis = rand(likeDislikeTable);
+  $("dislike").value = dis;
+
+  $("job").value = rand(jobTable);
+
+  // background depends on class
+  const isD = state.role === "detective";
+  const key = getCurrentClassKey();
+  const bgList = isD ? backgroundsDetective[key] : backgroundsAssistant[key];
+  $("background").value = rand(bgList);
+
+  // weird habit (detective)
+  if (isD) {
+    $("weirdHabit").value = rand(weirdHabits);
+  } else {
+    // guest
+    const gln = rand(lastNames);
+    const gfn = rand(firstNames);
+    $("guestName").value = `${gln} ${gfn}`;
+    $("guestSkill").value = rand(allSkillKeys);
+    $("guestRelation").value = rand(guestRelations);
+  }
+
+  // random skills selection to satisfy rule (optional: we can auto-pick)
+  autoPickSkills();
+
+  renderSkills();
+  renderPills();
+}
+
+function resetSkills() {
+  state.skills = new Set();
+  // add fixed will be re-added on renderSkills
+}
+
+function autoPickSkills() {
+  resetSkills();
+  const rule = getCurrentRule();
+  const fixed = new Set(rule.fixed || []);
+  for (const f of fixed) state.skills.add(f);
+
+  const req = rule.picks || {};
+  const free = rule.free || 0;
+
+  // For each required category, pick N skills randomly (excluding fixed and duplicates)
+  const chosen = new Set([...fixed]);
+
+  for (const [cat, n] of Object.entries(req)) {
+    const pool = skillsByCat[cat].map(s=>s.key).filter(k => !chosen.has(k));
+    const picks = uniqRand(pool, n);
+    picks.forEach(k => chosen.add(k));
+  }
+
+  // free picks from any category
+  if (free > 0) {
+    const pool = allSkillKeys.filter(k => !chosen.has(k));
+    uniqRand(pool, free).forEach(k => chosen.add(k));
+  }
+
+  state.skills = chosen;
+}
+
+/** ========= 出力 ========= **/
+function exportText() {
+  const role = state.role === "detective" ? "探偵" : "助手";
+  const classKey = getCurrentClassKey();
+  const rule = getCurrentRule();
+
+  const vals = {
+    role,
+    class: rule.label,
+    name: $("name").value.trim(),
+    alias: $("alias").value.trim(),
+    age: $("age").value.trim(),
+    height: $("height").value,
+    fashion: $("fashion").value,
+    job: $("job").value,
+    like: $("like").value,
+    dislike: $("dislike").value,
+    background: $("background").value,
+    weirdHabit: $("weirdHabit").value,
+    memo: $("memo").value.trim(),
+    partnerName: $("partnerName").value.trim(),
+    partnerCall: $("partnerCall").value.trim(),
+    partnerLike: $("partnerLike").value.trim(),
+    partnerDislike: $("partnerDislike").value.trim(),
+    guestName: $("guestName").value.trim(),
+    guestSkill: $("guestSkill").value,
+    guestRelation: $("guestRelation").value
+  };
+
+  // actions (text)
+  const base = state.role === "detective" ? actionTexts.baseDetective : actionTexts.baseAssistant;
+  const extra = state.role === "detective" ? actionTexts.detective[classKey] : actionTexts.assistant[classKey];
+
+  // skills (sorted by category)
+  const skillToCat = {};
+  for (const [c, list] of Object.entries(skillsByCat)) {
+    for (const s of list) skillToCat[s.key] = c;
+  }
+  const skillArr = [...state.skills].filter(Boolean);
+  skillArr.sort((a,b)=>{
+    const ca = skillToCat[a] || "z";
+    const cb = skillToCat[b] || "z";
+    if (ca !== cb) return ca.localeCompare(cb);
+    return a.localeCompare(b, "ja");
+  });
 
   const lines = [];
-  lines.push(`【名前】${el("name").value || ""}`);
-  lines.push(`【役割】${role}`);
-  lines.push(`【クラス】${cls}`);
-  lines.push(`【背景】${bg}`);
-  if(el("bgMemo").value.trim()) lines.push(`【背景メモ】${el("bgMemo").value.trim()}`);
+  lines.push(`【フタリソウサ キャラクター】`);
+  lines.push(`■ 種別：${vals.role}`);
+  lines.push(`■ クラス：${vals.class}`);
+  lines.push(`■ 名前：${vals.name || "（未入力）"}`);
+  if (vals.alias) lines.push(`■ 偽名：${vals.alias}`);
+  if (vals.age) lines.push(`■ 年齢：${vals.age}`);
+  if (vals.height) lines.push(`■ 身長：${vals.height}`);
+  if (vals.fashion) lines.push(`■ ファッション：${vals.fashion}`);
+  if (vals.job) lines.push(`■ 職業：${vals.job}`);
+  if (vals.like) lines.push(`■ 好き：${vals.like}`);
+  if (vals.dislike) lines.push(`■ 嫌い：${vals.dislike}`);
+  if (vals.background) lines.push(`■ 背景：${vals.background}`);
+  if (state.role === "detective" && vals.weirdHabit) lines.push(`■ 異常な癖：${vals.weirdHabit}`);
 
-  if(el("age").value.trim()) lines.push(`【年齢】${el("age").value.trim()}`);
-  lines.push(`【身長】${el("height").value}`);
-  lines.push(`【ファッション】${el("fashion").value}`);
-  lines.push(`【職業】${el("job").value}`);
-  lines.push(`【好き】${el("like").value}`);
-  lines.push(`【嫌い】${el("dislike").value}`);
-
-  if(roleEl.value === "detective"){
-    lines.push(`【異常な癖】${el("quirk").value}`);
-  }else{
-    lines.push(`【余裕】${el("yoyuu").value}`);
-    lines.push(`【心労】${el("shinrou").value}`);
-    const gn = el("guestName").value.trim();
-    if(gn){
-      lines.push(`【ゲスト】${gn}`);
-      lines.push(`【ゲスト技能】${el("guestSkill").value}`);
-      lines.push(`【ゲスト関係】${el("guestRel").value}`);
+  lines.push(``);
+  lines.push(`■ 技能：`);
+  if (!skillArr.length) lines.push(`  （未選択）`);
+  else {
+    const byCat = { insight:[], forensic:[], human:[], body:[] };
+    for (const sk of skillArr) {
+      const c = skillToCat[sk];
+      if (byCat[c]) byCat[c].push(sk);
+    }
+    for (const c of ["insight","forensic","human","body"]) {
+      if (byCat[c].length) lines.push(`  ・${catLabel(c)}：${byCat[c].join("、")}`);
     }
   }
 
-  if(el("charMemo").value.trim()) lines.push(`【人物メモ】${el("charMemo").value.trim()}`);
+  lines.push(``);
+  lines.push(`■ アクション：`);
+  lines.push(`  ・${base.name}（${base.type} / コスト${base.cost}）：${base.text}`);
+  lines.push(`  ・${extra.name}（${extra.type} / コスト${extra.cost}）：${extra.text}`);
 
-  lines.push("");
-  lines.push("【技能】");
-  if(state.skills.length){
-    const byCat = {};
-    for(const s of state.skills){
-      byCat[s.cat] ??= [];
-      byCat[s.cat].push(s);
-    }
-    for(const cat of ["洞察","鑑識","人間","肉体"]){
-      if(!byCat[cat]?.length) continue;
-      lines.push(`・${cat}：${byCat[cat].map(x=>x.name).join("、")}`);
-    }
-  }else{
-    lines.push("（未生成）");
+  if (state.role === "assistant") {
+    lines.push(``);
+    lines.push(`■ メンタル：余裕0 / 心労0（3でロスト）`);
+    lines.push(``);
+    lines.push(`■ ゲスト：`);
+    lines.push(`  ・名前：${vals.guestName || "（未入力）"}`);
+    lines.push(`  ・技能：${vals.guestSkill || "（未選択）"}`);
+    lines.push(`  ・関係：${vals.guestRelation || "（未選択）"}`);
   }
 
-  lines.push("");
-  lines.push("【アクション】");
-  if(state.actions.length){
-    for(const a of state.actions){
-      lines.push(`・${a.name}（${a.type}/コスト${a.cost}）`);
-    }
-  }else{
-    lines.push("（未生成）");
+  lines.push(``);
+  lines.push(`■ パートナー欄（任意）：`);
+  lines.push(`  ・名前：${vals.partnerName || "（空欄）"}`);
+  lines.push(`  ・呼び名：${vals.partnerCall || "（空欄）"}`);
+  lines.push(`  ・気に入ったところ：${vals.partnerLike || "（空欄）"}`);
+  lines.push(`  ・気に入らないところ：${vals.partnerDislike || "（空欄）"}`);
+
+  if (vals.memo) {
+    lines.push(``);
+    lines.push(`■ メモ：`);
+    lines.push(vals.memo);
   }
 
-  el("output").textContent = lines.join("\n").trim();
+  $("output").textContent = lines.join("\n");
 }
 
-async function copyOutput(){
-  const text = el("output").textContent;
-  try{
-    await navigator.clipboard.writeText(text);
-    alert("コピーしました！");
-  }catch(e){
-    alert("コピーに失敗しました。iOSでは長押しコピーで対応してください。");
-  }
-}
-
-/** ========= まとめランダム ========= */
-function randomAllLevel3(){
-  genRole();
-  genClass();
-  genBackground();
-  genName();
-  genAge();
-  genHeight();
-  genFashion();
-  genJob();
-  genLikeDislike();
-
-  if(roleEl.value === "detective") genQuirk();
-
-  if(roleEl.value === "assistant"){
-    genGuestName();
-    genGuestSkill();
-    genGuestRel();
-    el("yoyuu").value = "0";
-    el("shinrou").value = "0";
-  }
-
-  generateSkillsByRules();
-  generateActionsByRules();
-  buildOutput();
-}
-
-function resetAll(){
-  el("name").value = "";
-  el("age").value = "";
-  el("bgMemo").value = "";
-  el("charMemo").value = "";
-  el("yoyuu").value = "0";
-  el("shinrou").value = "0";
-  el("guestName").value = "";
-  state.skills = [];
-  state.actions = [];
-  renderSkills();
-  renderActions();
-  buildOutput();
-}
-
-/** ========= イベント ========= */
-roleEl.addEventListener("change", ()=>{
-  syncClassOptions();
-  syncBackgroundOptions();
-  applyRoleVisibility();
-});
-classEl.addEventListener("change", ()=>{ syncBackgroundOptions(); });
-
-ageChkEl.addEventListener("change", ()=>{ updateAgePill(); });
-
-el("btnAllRandom").addEventListener("click", randomAllLevel3);
-el("btnReset").addEventListener("click", resetAll);
-
-el("btnNameRand").addEventListener("click", ()=>{ genName(); buildOutput(); });
-el("rerollName").addEventListener("click", ()=>{ genName(); buildOutput(); });
-
-el("rerollRole").addEventListener("click", ()=>{ genRole(); buildOutput(); });
-el("rerollClass").addEventListener("click", ()=>{ genClass(); buildOutput(); });
-el("rerollBackground").addEventListener("click", ()=>{ genBackground(); buildOutput(); });
-
-el("rerollAge").addEventListener("click", ()=>{ genAge(); buildOutput(); });
-
-el("rerollHeight").addEventListener("click", ()=>{ genHeight(); buildOutput(); });
-el("rerollFashion").addEventListener("click", ()=>{ genFashion(); buildOutput(); });
-el("rerollJob").addEventListener("click", ()=>{ genJob(); buildOutput(); });
-el("rerollQuirk").addEventListener("click", ()=>{ genQuirk(); buildOutput(); });
-
-el("rerollLike").addEventListener("click", ()=>{ rerollLikeOnly(); buildOutput(); });
-el("rerollDislike").addEventListener("click", ()=>{ rerollDislikeOnly(); buildOutput(); });
-
-el("btnRandSkills").addEventListener("click", ()=>{ generateSkillsByRules(); buildOutput(); });
-el("btnRandActions").addEventListener("click", ()=>{ generateActionsByRules(); buildOutput(); });
-el("btnRandBoth").addEventListener("click", ()=>{ generateSkillsByRules(); generateActionsByRules(); buildOutput(); });
-
-el("rerollGuestName").addEventListener("click", ()=>{ genGuestName(); buildOutput(); });
-el("rerollGuestSkill").addEventListener("click", ()=>{ genGuestSkill(); buildOutput(); });
-el("rerollGuestRel").addEventListener("click", ()=>{ genGuestRel(); buildOutput(); });
-
-el("btnBuildOutput").addEventListener("click", buildOutput);
-el("btnCopy").addEventListener("click", copyOutput);
-
+/** ========= 起動 ========= **/
 init();
 </script>
 </body>
